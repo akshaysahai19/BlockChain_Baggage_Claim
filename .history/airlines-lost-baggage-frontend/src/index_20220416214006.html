@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Pick your Favorite</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+      .center {
+        text-align: center;
+        color: white;
+      }
+      </style>
+
+  </head>
+  <body>
+
+    <div>
+
+    <h1 class="center">Airports</h1>
+
+    <div class="card" id="registerCard">
+      <form class="form-align">
+        <label for="airportName">Airport Registration</label>
+
+        <div >
+          <label for="airportName">Name</label>
+          <input  class="form-control" id="airportName" aria-describedby="emailHelp" placeholder="Enter Airport Name" value="">
+        </div>
+       <div >
+          <label for="pricePerBag">Price Per Bag</label>
+          <input  class="form-control" id="perPriceBag" aria-describedby="emailHelp" placeholder="Enter Per Price Bag" value=0 type="number">
+        </div>
+        <button id="airportRegister" type="button" class="button-dis">Register</button>
+      </form>
+
+    </div>
+
+    
+    <div class="card" id="addbaggageCard">
+      <form class="form-align">
+        <label for="airportName">Add Baggage</label>
+
+        <div >
+          <label for="airportName">Total Number of bags</label>
+          <input  class="form-control" id="totalAddBaggageNumber" aria-describedby="emailHelp" placeholder="Enter Total Number of Bags"  value=0 type="number">
+        </div>
+        <button id="addBaggage" type="button" class="button-dis">Add</button>
+      </form>
+
+    </div>
+
+    
+  </div>
+
+  <div class="card"  id="claimResponseCard">
+    <form class="form-align">
+      <label for="airportName">Response to baggage claim</label>
+      <div >
+        <label for="airportName">Hash Details of the Request</label>
+        <input  class="form-control" id="hashDetailsWhileResponse" aria-describedby="emailHelp" placeholder="Enter Hash Details of the Request" value=0 type="number">
+      </div>
+      <button id="approveClaim" type="button" class="button">Approve</button>
+      <button id="disapproveClaim" type="button" class="disbutton">Disapprove</button>
+    </form>
+
+  </div>
+
+  
+  </div>
+
+
+  <h1 class="center">Buyers</h1>
+
+    <div class="card"  id="claimRequestCard">
+      <form class="form-align">
+        <label for="airportName">Claim Baggage</label>
+        <label htmlFor='text'>Pick the airport location</label>
+          
+          <select  id='sellingAirportWhileClaim'></select>
+        <div >
+          <label for="claimAirportName">Total Number of bags</label>
+          <input  class="form-control" id="totalClaimBaggageNumber" aria-describedby="emailHelp" placeholder="Enter Airport Name"  value=0 type="number">
+        </div>
+        <div >
+          <label for="airportName">Hash Details</label>
+          <input  class="form-control" id="hashDetailsWhileClaim" aria-describedby="emailHelp" placeholder="Enter Hash Details" value=0 type="number">
+        </div>
+        <button id="claimBaggageRequest" type="button" class="button-dis">Claim</button>
+      </form>
+
+
+    <div class="card"  id="settlePaymentCard">
+      <form class="form-align">
+        <label for="airportName">Settle payment</label>
+        <label htmlFor='text'>Pick the airport location</label>
+          
+          <select  id='sellingAirportWhileSettle'></select>
+        <div >
+          <label for="airportName">Hash Details</label>
+          <input  class="form-control" id="hashDetailsWhilePayment" aria-describedby="emailHelp" placeholder="Enter Hash Details" value=0 type="number">
+        </div>
+        <button id="pay" type="button" class="button">Pay</button>
+      </form>
+
+    </div>
+  
+    </div>
+
+    <div class="card"  id="unregisterCard">
+      <form class="form-align">
+        <label for="airportName">Unregister Airport</label>
+
+        <label htmlFor='text'>Pick the airport location</label>
+          
+        <select id ="unregisterAirportName"></select>
+        <button id="airportUnregister" type="button" class="disbutton">Unregister</button>
+      </form>
+
+    </div>
+
+
+
+    </div> 
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/dist/bootstrap.min.js"></script>
+    <script src="js/dist/web3.min.js"></script>
+    <script src="js/dist/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

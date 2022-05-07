@@ -1,0 +1,132 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #383838;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-size: 1 rem;
+}
+
+input {
+  font: inherit;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  font-size: 1.5rem;
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 30px;
+  text-align: center;
+  color: #242424;
+}
+textarea {
+  font: inherit;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  font-size: 1.5rem;
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 30px;
+  text-align: center;
+  color: #242424;
+}
+input:focus {
+  outline: none;
+  border-color: #010c18;
+  background-color: #ecf8fa;
+}
+textarea:focus {
+  outline: none;
+  border-color: #010c18;
+  background-color: #ecf8fa;
+}
+select:focus {
+  outline: none;
+  border-color: #010c18;
+  background-color: #ecf8fa;
+}
+select {
+  font: inherit;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  font-size: 1.5rem;
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 30px;
+  text-align: center;
+  color: #242424;
+}
+
+button {
+  font: inherit;
+  background-color: #074ea0;
+  color: white;
+  border: 1px solid #074ea0;
+  border-radius: 30px;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
+
+}
+.disbutton{
+  font: inherit;
+  background-color: #074ea0;
+  color: white;
+  border: 1px solid #074ea0;
+  border-radius: 30px;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.account-change{
+  margin-top: 20%;  
+  margin-left: 40%;  
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+
+  max-width: 30rem;
+  background-color: white;
+  border-radius: 12px;
+}
+button:hover,
+button:active {
+  background-color: #20aa04;
+  border-color: #20aa04;
+}
+.card {
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  margin: 2rem auto;
+  max-width: 30rem;
+  background-color: white;
+  border-radius: 12px;
+}
+.form-align {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+button:hover,
+button:active {
+  background-color: #20aa04;
+  border-color: #20aa04;
+}
+.disbutton:hover,
+
+.disbutton:active {
+  background-color: red;
+  border-color: red;
+}
