@@ -39,7 +39,7 @@ contract BaggageClaim  is IERC20{
 
     struct Airports{
         address airportAddress;
-        string airportName;
+        uint airportIndex;
     }
 
     struct AirportBaggage{
@@ -119,10 +119,11 @@ contract BaggageClaim  is IERC20{
 
         transferFrom(customer, airportAuthority, _balances[customer]);
     }
-    function unregisterAirports(address  toAirports) public  onlyAirportAuthority{
+    function unregisterAirports(address  toAirports, uint index) public  onlyAirportAuthority{
         if(memberships[toAirports].memebershipStatus!=1){
             revert();
         }
+        // removeAirportEntry(index);
         memberships[toAirports].memebershipStatus = 0;
         _approve(toAirports,airportAuthority, _balances[toAirports]);
 
@@ -145,7 +146,7 @@ contract BaggageClaim  is IERC20{
    //-----------------------------------------------------------------------------
      
 
-    function registerAirports(string memory airportsName, uint pricePerbag) public{
+    function registerAirports(uint airportIndex, uint pricePerbag) public{
         if(msg.sender==airportAuthority){
             revert();
         }
@@ -159,7 +160,7 @@ contract BaggageClaim  is IERC20{
         airportBaggage[newAirports].totalBaggage = 0;
         airportBaggage[newAirports].totalBaggageClaimed = 0;
         airportBaggage[newAirports].totalUnclaimedBaggage = 0;
-        airportNames.push(Airports(newAirports, airportsName));
+        airportNames.push(Airports(newAirports, airportIndex));
     }
 
    
@@ -199,7 +200,7 @@ contract BaggageClaim  is IERC20{
         memberships[customer].memebershipStatus = 3;
 
 
-                _approve(airportAuthority,customer, 100);
+        _approve(airportAuthority,customer, 100);
 
         transferFrom(airportAuthority, customer, 100);
 
@@ -274,8 +275,8 @@ contract BaggageClaim  is IERC20{
         return airportNames.length;
     }
 
-    function getAirportsName(uint index) public view returns(string memory){
-        return airportNames[index].airportName;
+    function getAirportsIndex(uint index) public view returns(uint){
+        return airportNames[index].airportIndex;
     }
 
     function getAirportsAddress(uint index) public view returns(address){
@@ -289,6 +290,13 @@ contract BaggageClaim  is IERC20{
     function getMembershipStatus() public view returns(uint){
         return memberships[msg.sender].memebershipStatus;
     }
+
+    // 
+    function removeAirportEntry(uint index) public{
+        airportNames[index] = airportNames[airportNames.length - 1];
+        airportNames.pop();
+    }
+    // 
 
     //-----------------------------------------------------------------------------  
 //

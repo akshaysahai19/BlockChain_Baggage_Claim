@@ -8,10 +8,8 @@ App = {
   accountType: 99, //0-customer, 1-airport
   currentAccount: null,
   init: function () {
-
-    $.getJSON('../airports.json', function(data) {
-
-      for (i = 0; i < data.length; i ++) {
+    $.getJSON("../airports.json", function (data) {
+      for (i = 0; i < data.length; i++) {
         App.names.push(data[i]);
       }
       return App.loadAllAirports();
@@ -44,7 +42,6 @@ App = {
       App.contracts.claim.setProvider(App.web3Provider);
 
       App.getAirportAuthority();
-
     }).then(function () {
       App.accountSwitched();
       // App.checkMemeberShipStatus();
@@ -53,106 +50,107 @@ App = {
   },
 
   loadRegisteredAirports: function () {
+    App.contracts.claim.deployed().then(function (instance) {
 
-    App.contracts.claim
-        .deployed()
-        .then(function (instance) {
+      App.airports = new Array();
 
-    var airportsInstance = instance;
-          var airportsCount;
-          airportsInstance
-            .getAirportsCount({ from: App.account })
-            .then(async (data) => {
-              console.log("data", data.c[0]);
-              airportsCount = data.c[0];
+      var airportsInstance = instance;
+      var airportsCount=0;
+      airportsInstance
+        .getAirportsCount({ from: App.account })
+        .then(async (data) => {
+          console.log("data", data.c[0]);
+          var localCount = data.c[0];
 
-              for (var i = 0; i < airportsCount; i++) {
-                await App.fetchAirports(i, airportsCount, airportsInstance);
-              }
-              console.log("App.airports FinalList = ", App.airports);
-            });
-
-          console.log(
-            "App.contracts.claim.currentProvider: " +
-            App.contracts.claim.currentProvider
-          );
+          for (var i = 0; i < localCount; i++) {
+            // console.log("getMembershipStatus i1 ", i);
+            airportsInstance
+              .getAirportsAddress(i, { from: App.account })
+              .then(async (data) => {
+                var addresss = data;
+                console.log("addresss00", addresss);
+                airportsInstance
+                  .getMembershipStatus({ from: addresss })
+                  .then(async (data) => {
+                    console.log("getMembershipStatus data00 ", data.c[0]);
+                    if (data.c[0] == 1) {
+                      App.airports.push({});
+                      App.fetchAirports(
+                        airportsCount,
+                        addresss,
+                        airportsInstance
+                      );
+                      airportsCount++;
+                    }
+                  });
+              });
+          }
+          App.handleUpdateAirportsList();
+          console.log("airportsCount11", airportsCount);
+          return airportsCount;
         });
+    });
   },
 
-  fetchAirports: function (index, count, airportsInstance) {
+  fetchAirports: function (index, address, airportsInstance) {
     var airportIndex;
     var address;
     var price;
     var quantity;
 
     console.log("index: ", index);
-    App.airports = [];
-
     airportsInstance
-      .getAirportsAddress(index, { from: App.account })
-      .then((data) => {
-        console.log("address ", data);
-        address = data;
-        console.log("i = " + index, "address = ", address);
-        console.log("App.airports FinalList = ", App.airports);
+      .getAirportsIndex(index, { from: App.account })
+      .then(async (data) => {
+        console.log("airportIndex ", data);
+        airportIndex = data.c[0];
 
-        airportsInstance.getMembershipStatus({ from: address }).then((data) => {
-          console.log("getMembershipStatus data ", data.c[0]);
-          if (data.c[0] == 1) {
-            console.log("inside getMembershipStatus data ");
-            console.log(App.airports);
 
-            airportsInstance
-              .getAirportsIndex(index, { from: App.account })
-              .then((data) => {
-                console.log("airportIndex ", data);
-                airportIndex = data.c[0];
-              });
-
-            airportsInstance
-              .getAirportPricePerBag({ from: address })
-              .then((data) => {
-                price = data.c[0];
-                console.log("price ", price);
-
-                airportsInstance
-                  .getTotalUnclaimedBaggage({ from: address })
-                  .then((data) => {
-                    quantity = data.c[0];
-                    console.log("count ", quantity);
-
-                    console.log(
-                      "index = " + index,
-                      "airportIndex = ",
-                      airportIndex,
-                      "address = ",
-                      address,
-                      "price = ",
-                      price,
-                      "quantity = ",
-                      quantity
-                    );
-                    App.airports.push({
-                      airportIndex: airportIndex,
-                      address: address,
-                      price: price,
-                      quantity: quantity,
-                    });
-                    if (index == count - 1) {
-                      console.log("App.airports FinalList = ", App.airports);
-                      App.handleUpdateAirportsList();
-                    }
-                  });
-              });
-          }
+        airportsInstance.getAirportPricePerBag({ from: address }).then((data) => {
+          price = data.c[0];
+          console.log("price ", price);
+    
+          airportsInstance
+            .getTotalUnclaimedBaggage({ from: address })
+            .then(async (data) => {
+              quantity = data.c[0];
+    
+              console.log(
+                "index = " + index,
+                "airportIndex = ",
+                airportIndex,
+                "address = ",
+                address,
+                "price = ",
+                price,
+                "quantity = ",
+                quantity
+              );
+              var airportObject = {
+                airportIndex: airportIndex,
+                address: address,
+                price: price,
+                quantity: quantity,
+              };
+    
+              App.airports[index] = airportObject;
+    
+              App.handleUpdateAirportsList();
+    
+              console.log("App.airports 00FinalList = ", airportObject);
+              console.log("App.airports 00FinalList = ", App.airports);
+              // return airportObject;
+            });
         });
+
+
       });
+    
   },
 
   accountSwitched: function () {
-
     console.log("accountSwitched Called");
-    
+
     ethereum
       .request({ method: "eth_accounts" })
       .then(App.handleAccountsChanged)
@@ -181,12 +179,10 @@ App = {
       console.log("Account changed to " + App.account);
       App.accountType = 99;
       App.checkMemeberShipStatus();
-      
       $.getScript("UI.js", function () {
-       resetUIFields();
-       App.airports = [];
-        }
-      );
+        resetUIFields();
+        App.airports = [];
+      });
       // Do any other work!
     }
   },
@@ -231,8 +227,8 @@ App = {
       );
     }); //settlePayment
     $(document).on("click", "#airportUnregister", function () {
-      var unregisterAirportName = $("#unregisterAirportName").val();
-      App.handleAirportUnregistration(unregisterAirportName);
+      var unregisterAirportIndex = $("#unregisterAirportName").val();
+      App.handleAirportUnregistration(unregisterAirportIndex);
     }); //unregister airports
     $(document).on("click", "#customerButtonUnregister", function () {
       var unregisterAirportName = $("#customerAddressUnregister").val();
@@ -259,15 +255,11 @@ App = {
       var index = $("#sellingAirportWhileSettle").val();
       App.showBagDetails(index);
     });
-    
 
     App.loadParticleJs();
-
   },
-  
 
   loadAllAirports: function () {
-
     var airportList = jQuery("#airport_list");
     airportList.empty();
     for (var i = 0; i < App.names.length; i++) {
@@ -293,14 +285,13 @@ App = {
       .then(function (result, err) {
         alert(
           "Price Per Bag: " +
-          App.airports[index].price +
-          "\n" +
-          "Avalaible Quantity: " +
-          result.c[0]
+            App.airports[index].price +
+            "\n" +
+            "Avalaible Quantity: " +
+            result.c[0]
         );
       });
   },
-
 
   getAirportAuthority: function () {
     App.contracts.claim
@@ -399,7 +390,7 @@ App = {
       .then(function (instance) {
         customerRegistryInstance = instance;
 
-        return customerRegistryInstance.giveJoiningBonus(address,{
+        return customerRegistryInstance.giveJoiningBonus(address, {
           from: App.account,
         });
       })
@@ -410,8 +401,7 @@ App = {
           if (parseInt(result.receipt.status) == 1) {
             alert(App.account + " Bonus given successfully");
             App.checkMemeberShipStatus();
-          } else
-            alert(App.account + " Bonus allotment failed due to revert");
+          } else alert(App.account + " Bonus allotment failed due to revert");
         } else {
           alert(App.account + " Bonus allotmenr failed");
         }
@@ -425,21 +415,33 @@ App = {
     sellingAirportWhileClaim.empty();
     for (var i = 0; i < App.airports.length; i++) {
       var newOption = jQuery(
-        '<option value="' + i + '">' + App.names[App.airports[i].airportIndex] + "</option>"
+        '<option value="' +
+          i +
+          '">' +
+          App.names[App.airports[i].airportIndex] +
+          "</option>"
       );
       sellingAirportWhileClaim.append(newOption);
     }
     sellingAirportWhileSettle.empty();
-    for (var i = 1; i < App.airports.length; i++) {
+    for (var i = 0; i < App.airports.length; i++) {
       var newOption = jQuery(
-        '<option value="' + i + '">' + App.names[App.airports[i].airportIndex] + "</option>"
+        '<option value="' +
+          i +
+          '">' +
+          App.names[App.airports[i].airportIndex] +
+          "</option>"
       );
       sellingAirportWhileSettle.append(newOption);
     }
     unregisterAirportName.empty();
-    for (var i = 1; i < App.airports.length; i++) {
+    for (var i = 0; i < App.airports.length; i++) {
       var newOption = jQuery(
-        '<option value="' + i + '">' + App.names[App.airports[i].airportIndex] + "</option>"
+        '<option value="' +
+          i +
+          '">' +
+          App.names[App.airports[i].airportIndex] +
+          "</option>"
       );
       unregisterAirportName.append(newOption);
     }
@@ -562,13 +564,14 @@ App = {
   handleAirportUnregistration: function (index) {
     var airportsRegistryInstance;
     var sellingAirport = App.airports[index].address;
+    var airportIndex = App.airports[index].airportIndex;
 
     App.contracts.claim
       .deployed()
       .then(function (instance) {
         airportsRegistryInstance = instance;
 
-        return airportsRegistryInstance.unregisterAirports(sellingAirport, {
+        return airportsRegistryInstance.unregisterAirports(sellingAirport, airportIndex, {
           from: App.account,
         });
       })
@@ -578,11 +581,10 @@ App = {
           console.log(result.receipt.status);
           if (parseInt(result.receipt.status) == 1) {
             alert(App.account + " Airport unregistrerd successfully");
-            App.updateRemoveAirport(sellingAirport);
+            App.loadRegisteredAirports();
+            // App.updateRemoveAirport(index);
           } else
-            alert(
-              App.account + " Airport unregistration failed due to revert"
-            );
+            alert(App.account + " Airport unregistration failed due to revert");
         } else {
           alert(App.account + " Airport unregistration failed");
         }
@@ -617,10 +619,10 @@ App = {
       });
   },
 
-  updateRemoveAirport: function (sellingAirport) {
+  updateRemoveAirport: function (index) {
     var tempAirports = [];
     for (var i = 0; i < App.airports.length; i++) {
-      if (App.airports[i].address != sellingAirport) {
+      if (i != index) {
         tempAirports.push(App.airports[i]);
       }
     }
@@ -640,7 +642,7 @@ App = {
       })
       .then(function (res) {
         console.log(res);
-        alert(" Current Balance: " + res + " ETH");
+        alert(" Current Balance: " + res + " CUB");
         // alert("  Balance is result: " + res);
       })
       .catch(function (err) {
@@ -670,25 +672,30 @@ App = {
         } else {
           App.accountType = 99;
         }
-        App.screenFilter(res);
+        App.screenFilter(res.c[0]);
       })
       .catch(function (err) {
         console.log(err.message);
       });
   },
 
-  screenFilter: function (memeberShip) {
-    App.loadRegisteredAirports();
+  screenFilter: function (memebershipStatus) {
     console.log("To screen filter");
-    var memebershipStatus = memeberShip.c[0];
-    $.getScript("UI.js", function() {
+    if (
+      memebershipStatus == 2 ||
+      memebershipStatus == 3 ||
+      memebershipStatus == 0
+    ) {
+      App.loadRegisteredAirports();
+    }
+    $.getScript("UI.js", function () {
       updateUIState(memebershipStatus, App.accountType);
     });
   },
 
   loadParticleJs: function () {
     $.getScript("UI.js", function () {
-      particleInit();  // call particleInit() function
+      particleInit(); // call particleInit() function
     });
   },
 };
